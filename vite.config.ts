@@ -37,12 +37,13 @@ export default defineConfig(({mode}) => {
     devEnvKey,
   ];
   const validKey = candidates.find((k) => !isPlaceholder(k))?.trim() || '';
+  const clientKey = mode === 'development' ? validKey : '';
   return {
     base: './',
     plugins: [react(), tailwindcss()],
     define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(validKey),
-      'process.env.API_KEY': JSON.stringify(validKey),
+      'process.env.GEMINI_API_KEY': JSON.stringify(clientKey),
+      'process.env.API_KEY': JSON.stringify(clientKey),
     },
     resolve: {
       alias: {
