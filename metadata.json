@@ -1,0 +1,8 @@
+{
+  "name": "오디오 스토리북 생성기 - Managed Agent",
+  "description": "Gemini 모델 카탈로그 전반에 걸쳐 Gemini Managed Agent와 Gemini API CLI를 기반으로 작동하는, 자율형 그림 동화책 및 드라마 형식의 고전 오디오북 제작 스튜디오.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

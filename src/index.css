@@ -1,0 +1,913 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+:root {
+  --folio-paper: #F6F2EA;
+  --folio-card: #EFE9DC;
+  --folio-ink: #1E1B18;
+  --folio-muted: #7A7267;
+  --folio-accent: #4A6B53;
+  --folio-rule: #D5CBB8;
+
+  --font-cinzel: 'Cinzel', Georgia, serif;
+  --font-cormorant: 'Cormorant Garamond', Georgia, serif;
+  --font-garamond: 'EB Garamond', 'Cormorant Garamond', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--folio-paper);
+  color: var(--folio-ink);
+  font-family: var(--font-garamond);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pure warm archival paper surface (#F6F2EA) without dark vignettes or stripes */
+.archival-paper-surface {
+  background-color: var(--folio-paper);
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ============================================================================
+   CANONICAL TWO-PAGE OPEN FOLIO SPREAD (render_audiobook_video.py @ 1920×1080)
+   Used identically across Home (Title & Commission Folio), Crafting, and Reader
+   ============================================================================ */
+
+.austen-spread-viewport {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--folio-paper);
+  color: var(--folio-ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px 42px 14px;
+  position: relative;
+}
+
+/* Outer horizontal rules (y=56 & y=1024) and center spine hairline at SPINE_X = 1016/1920 (52.917%) */
+.austen-open-book {
+  width: 100%;
+  max-width: 1800px;
+  min-height: calc(100vh - 76px);
+  margin: 0 auto;
+  border-top: 1px solid var(--folio-rule);
+  border-bottom: 1px solid var(--folio-rule);
+  display: grid;
+  grid-template-columns: 52.917% 47.083%;
+  position: relative;
+  background-color: var(--folio-paper);
+  /* Subtle center spine fold shadow along 52.917% */
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 51.4%,
+    rgba(30, 27, 24, 0.022) 52.5%,
+    rgba(30, 27, 24, 0.052) 52.917%,
+    rgba(30, 27, 24, 0.020) 53.3%,
+    transparent 54.4%,
+    transparent 100%
+  );
+}
+
+.austen-left-page {
+  border-right: 1px solid var(--folio-rule);
+  padding: 18px 48px 14px 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.austen-right-page {
+  padding: 18px 12px 14px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Tracked Cinzel Running Headers (14px Cinzel, tracking 1.8px = 0.129em, muted #7A7267) */
+.austen-running-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 2px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--folio-rule);
+  font-family: var(--font-cinzel);
+  font-size: 14px;
+  letter-spacing: 0.129em;
+  color: var(--folio-muted);
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: pre;
+}
+
+.austen-running-bar > span:last-child {
+  letter-spacing: 0.114em;
+  margin-right: -0.114em;
+}
+
+/* Tracked Cinzel Running Footers (14px Cinzel, tracking 1.6px = 0.114em, muted #7A7267) */
+.austen-footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 14px;
+  border-top: 1px solid var(--folio-rule);
+  font-family: var(--font-cinzel);
+  font-size: 14px;
+  letter-spacing: 0.114em;
+  color: var(--folio-muted);
+  text-transform: uppercase;
+  line-height: 1.2;
+  position: relative;
+  white-space: pre;
+}
+
+.austen-footer-bar > span:last-child {
+  margin-right: -0.114em;
+}
+
+/* 2px chapter reading progress filament along the right-page footer rule */
+.austen-progress-filament {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  height: 2px;
+  background-color: var(--folio-accent);
+  transition: width 0.35s ease;
+}
+
+/* Matted 16:9 Stage Box on Left Page (#EFE9DC Card Mat + 1px #D5CBB8 Rule) */
+.austen-plate-mat {
+  background-color: var(--folio-card);
+  border: 1px solid var(--folio-rule);
+  padding: 14px 12px 18px 12px;
+  margin: auto 0;
+  transition: opacity 0.28s ease;
+}
+
+.austen-plate-stage {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--folio-rule);
+  background-color: var(--folio-paper);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.austen-plate-stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.austen-plate-caption-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 18px;
+  padding: 0 2px;
+}
+
+.austen-plate-number {
+  font-family: var(--font-cinzel);
+  font-size: 14px;
+  letter-spacing: 0.129em;
+  color: var(--folio-accent);
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.austen-plate-caption {
+  font-family: var(--font-garamond);
+  font-style: italic;
+  font-size: 21px;
+  color: var(--folio-ink);
+}
+
+/* Right Page Speaker Subheader Band (between y=108 rule and y=166 rule — pure typography, zero buttons) */
+.austen-speaker-band {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 16px 0 15px;
+  border-bottom: 1px solid var(--folio-rule);
+  min-height: 56px;
+}
+
+.austen-speaker-name {
+  font-family: var(--font-cinzel);
+  font-size: 16px;
+  letter-spacing: 0.1125em;
+  text-transform: uppercase;
+  transition: color 0.22s ease;
+}
+
+.austen-speaker-role {
+  font-family: var(--font-garamond);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--folio-muted);
+  white-space: pre;
+}
+
+/* Right Page Literary Body: 25% top / 75% bottom vertical slack split (matching render_audiobook_video.py) */
+.austen-folio-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0 24px;
+  gap: 0.62em;
+  font-size: clamp(20px, 1.38vw, 26px);
+}
+
+.austen-folio-body::before {
+  content: "";
+  flex: 1;
+}
+
+.austen-folio-body::after {
+  content: "";
+  flex: 3;
+}
+
+.austen-turn-block {
+  cursor: pointer;
+  text-align: left;
+}
+
+.austen-turn-rubric {
+  font-family: var(--font-cinzel);
+  font-size: 14px;
+  letter-spacing: 0.107em;
+  line-height: 26px;
+  text-transform: uppercase;
+  margin: 0;
+  transition: color 0.22s ease;
+}
+
+.austen-turn-text {
+  font-family: var(--font-garamond);
+  font-size: inherit;
+  line-height: 1.44;
+  margin: 0;
+  font-variant-numeric: oldstyle-nums proportional-nums;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  transition: color 0.22s ease;
+}
+
+/* 3-State Paragraph Ink (pre-blended toward --folio-paper via color-mix, matching render_audiobook_video.py) */
+.austen-turn-block.state-active .austen-turn-text {
+  color: var(--folio-ink);
+}
+.austen-turn-block.state-active .austen-turn-rubric {
+  color: var(--folio-accent);
+}
+
+.austen-turn-block.state-past .austen-turn-text {
+  color: color-mix(in srgb, var(--folio-ink) 50%, var(--folio-paper));
+}
+.austen-turn-block.state-past .austen-turn-rubric {
+  color: color-mix(in srgb, var(--folio-accent) 55%, var(--folio-paper));
+}
+
+.austen-turn-block.state-future .austen-turn-text {
+  color: color-mix(in srgb, var(--folio-ink) 38%, var(--folio-paper));
+}
+.austen-turn-block.state-future .austen-turn-rubric {
+  color: color-mix(in srgb, var(--folio-accent) 42%, var(--folio-paper));
+}
+
+/* ============================================================================
+   HOME PAGE: TITLE PAGE & TABLE OF CONTENTS (VERSO) + COMMISSION FOLIO (RECTO)
+   ============================================================================ */
+
+.folio-title-verso {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 0 18px;
+}
+
+.folio-title-block {
+  text-align: center;
+  margin: auto 0;
+  padding: 12px 16px;
+}
+
+.folio-diamond-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 20px auto;
+  max-width: 440px;
+}
+
+.folio-diamond-rule-line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--folio-rule);
+}
+
+.folio-diamond-rule-gem {
+  width: 7px;
+  height: 7px;
+  background-color: var(--folio-accent);
+  transform: rotate(45deg);
+}
+
+/* Classic Typographic Table of Contents (replaces boxed cards) */
+.folio-contents-section {
+  border-top: 1px solid var(--folio-rule);
+  padding-top: 18px;
+  margin-top: 12px;
+}
+
+.folio-contents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.folio-contents-row {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 3px 0;
+  cursor: pointer;
+  text-align: left;
+  color: color-mix(in srgb, var(--folio-ink) 62%, var(--folio-paper));
+  transition: color 0.18s ease;
+}
+
+.folio-contents-row:hover,
+.folio-contents-row:focus-visible {
+  color: var(--folio-ink);
+  outline: none;
+}
+
+.folio-contents-roman {
+  font-family: var(--font-cinzel);
+  font-size: 13.5px;
+  letter-spacing: 0.114em;
+  color: var(--folio-accent);
+  width: 38px;
+  flex-shrink: 0;
+}
+
+.folio-contents-title {
+  font-family: var(--font-garamond);
+  font-size: 21px;
+  line-height: 1.3;
+}
+
+.folio-contents-leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--folio-rule);
+  margin: 0 12px;
+  position: relative;
+  top: -4px;
+  min-width: 24px;
+}
+
+.folio-contents-meta {
+  font-family: var(--font-garamond);
+  font-style: italic;
+  font-size: 18.5px;
+  color: var(--folio-muted);
+  flex-shrink: 0;
+}
+
+/* Right Page Borderless Manuscript Commission Surface */
+.folio-manuscript-textarea {
+  width: 100%;
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(1.44em - 1px),
+    color-mix(in srgb, var(--folio-rule) 65%, var(--folio-paper)) calc(1.44em - 1px),
+    color-mix(in srgb, var(--folio-rule) 65%, var(--folio-paper)) 1.44em
+  );
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 0;
+  margin: 4px 0 0;
+  font-family: var(--font-garamond);
+  font-size: clamp(20px, 1.38vw, 25px);
+  line-height: 1.44;
+  color: var(--folio-ink);
+  caret-color: var(--folio-accent);
+}
+
+.folio-manuscript-textarea::placeholder {
+  font-style: italic;
+  color: color-mix(in srgb, var(--folio-ink) 38%, var(--folio-paper));
+}
+
+/* Typographic Seed Run (no pills, no borders, no fills) */
+.folio-seed-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: var(--font-garamond);
+  font-style: italic;
+  font-size: clamp(18.5px, 1.2vw, 21px);
+  line-height: 1.45;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--folio-ink) 42%, var(--folio-paper));
+  transition: color 0.18s ease;
+}
+
+.folio-seed-link:hover {
+  color: color-mix(in srgb, var(--folio-ink) 78%, var(--folio-paper));
+}
+
+.folio-seed-link.is-selected {
+  color: var(--folio-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--folio-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+/* Inline Colophon Sentence Selects (borderless dotted underline) */
+.folio-inline-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dotted var(--folio-rule);
+  padding: 0 3px 1px;
+  font-family: var(--font-garamond);
+  font-style: italic;
+  font-size: inherit;
+  color: var(--folio-accent);
+  cursor: pointer;
+  outline: none;
+}
+
+.folio-inline-select:hover,
+.folio-inline-select:focus {
+  border-bottom-style: solid;
+  border-bottom-color: var(--folio-accent);
+}
+
+/* Minimal Cinzel Inscription CTA Link (no button box, no fill) */
+.folio-commission-link {
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  font-family: var(--font-cinzel);
+  font-size: 14px;
+  letter-spacing: 0.129em;
+  text-transform: uppercase;
+  color: var(--folio-accent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.folio-commission-link:hover:not(:disabled) {
+  color: var(--folio-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+
+/* ============================================================================
+   GHOSTED OUTER MARGIN LINE (BELOW BOTTOM OUTER RULE y=1024)
+   Holds audio playback, folio navigation, and colophon links with zero chrome
+   ============================================================================ */
+
+.austen-margin-bar {
+  width: 100%;
+  max-width: 1800px;
+  margin: 10px auto 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-cinzel);
+  font-size: 11px;
+  letter-spacing: 0.125em;
+  text-transform: uppercase;
+  color: var(--folio-muted);
+  opacity: 0.48;
+  transition: opacity 0.22s ease;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.austen-margin-bar:hover,
+.austen-margin-bar:focus-within {
+  opacity: 0.95;
+}
+
+.austen-margin-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: var(--font-cinzel);
+  font-size: 11px;
+  letter-spacing: 0.125em;
+  text-transform: uppercase;
+  color: var(--folio-muted);
+  cursor: pointer;
+  transition: color 0.16s ease;
+}
+
+.austen-margin-link:hover:not(:disabled) {
+  color: var(--folio-ink);
+}
+
+.austen-margin-link.is-active {
+  color: var(--folio-accent);
+}
+
+.austen-margin-link:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Spine-hinged leaf flip animation when turning folios or opening a volume */
+.folio-page-turning {
+  transform-origin: 52.917% 50%;
+  animation: spineLeafFlip 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes spineLeafFlip {
+  0% {
+    opacity: 0.38;
+    transform: perspective(2200px) rotateY(-6deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(2200px) rotateY(0deg);
+  }
+}
+
+/* Right-hand text folio crossfade (0.45s cosine crossfade while left-hand 3D diorama stays stationary) */
+.folio-right-page-fading {
+  animation: rightFolioCrossfade 0.45s ease-in-out;
+}
+
+@keyframes rightFolioCrossfade {
+  0% {
+    opacity: 0.18;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* 3D Paper Pop-Up Diorama unfolding from the bottom hinge (matching in_fold in render_audiobook_video.py) */
+.folio-diorama-unfolding img {
+  transform-origin: 50% 94%;
+  animation: popupDioramaUnfold 1.35s cubic-bezier(0.18, 0.88, 0.32, 1);
+}
+
+@keyframes popupDioramaUnfold {
+  0% {
+    opacity: 0.55;
+    transform: perspective(1200px) rotateX(52deg) scaleY(0.22) skewX(-6deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1200px) rotateX(0deg) scaleY(1) skewX(0deg);
+  }
+}
+
+/* Full-frame Fine-Press Opening Chapter Title Card (0.0s .. 2.6s of render_audiobook_video.py) */
+.austen-opening-title-card {
+  width: 100%;
+  max-width: 1800px;
+  min-height: calc(100vh - 76px);
+  margin: 0 auto;
+  border: 1px solid var(--folio-rule);
+  padding: 6px;
+  background-color: var(--folio-paper);
+  display: flex;
+  flex-direction: column;
+  animation: titleCardFadeIn 0.5s ease-out;
+  cursor: pointer;
+}
+
+.austen-opening-title-inner {
+  flex: 1;
+  border: 1px solid var(--folio-rule);
+  padding: 28px 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+@keyframes titleCardFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .austen-spread-viewport {
+    padding: 16px 18px 20px;
+    justify-content: flex-start;
+  }
+  .austen-open-book {
+    grid-template-columns: minmax(0, 1fr);
+    background-image: none;
+    min-height: auto;
+  }
+  .austen-left-page {
+    border-right: none;
+    border-bottom: 1px solid var(--folio-rule);
+    padding: 18px 8px 24px;
+    min-width: 0;
+    gap: 16px;
+  }
+  .austen-right-page {
+    padding: 22px 8px 18px;
+    min-width: 0;
+    gap: 16px;
+  }
+  .austen-folio-body::before,
+  .austen-folio-body::after {
+    display: none;
+  }
+  .austen-folio-body {
+    padding: 16px 0;
+  }
+  .austen-running-bar,
+  .austen-footer-bar {
+    white-space: normal;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+  .austen-margin-bar {
+    opacity: 0.92;
+    margin-top: 14px;
+  }
+  .austen-margin-bar > div {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+  .austen-margin-link {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 2px;
+  }
+  .austen-plate-stage:not(:has(img)) {
+    aspect-ratio: auto;
+    min-height: 220px;
+  }
+  .austen-opening-title-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .austen-spread-viewport {
+    padding: 12px 14px 20px;
+    overflow-x: hidden;
+  }
+  .austen-left-page {
+    padding: 14px 2px 18px;
+    gap: 14px;
+  }
+  .austen-right-page {
+    padding: 16px 2px 14px;
+    gap: 14px;
+  }
+  .austen-running-bar,
+  .austen-footer-bar {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding-bottom: 10px;
+  }
+  .austen-footer-bar {
+    padding-top: 10px;
+  }
+  .folio-title-verso {
+    padding: 14px 0 10px;
+    gap: 16px;
+  }
+  .folio-title-block {
+    padding: 6px 4px;
+  }
+  .folio-title-block h1 {
+    font-size: clamp(32px, 8.5vw, 42px) !important;
+    line-height: 1.08 !important;
+  }
+  .folio-title-block > div:not(.folio-diamond-rule):not(:last-child) {
+    white-space: normal !important;
+    font-size: 11.5px !important;
+    letter-spacing: 0.08em !important;
+    line-height: 1.45;
+  }
+  .folio-title-block > div:last-child {
+    font-size: clamp(18px, 4.8vw, 22px) !important;
+    line-height: 1.35;
+  }
+  .folio-diamond-rule {
+    margin: 14px auto;
+    max-width: 240px;
+  }
+  .folio-contents-section {
+    padding-top: 14px;
+    margin-top: 6px;
+  }
+  .folio-contents-list {
+    gap: 6px;
+  }
+  .folio-contents-row {
+    flex-wrap: wrap;
+    align-items: baseline;
+    padding: 8px 0;
+    min-height: 44px;
+    row-gap: 2px;
+    border-bottom: 1px dotted color-mix(in srgb, var(--folio-rule) 55%, var(--folio-paper));
+  }
+  .folio-contents-row:last-child {
+    border-bottom: none;
+  }
+  .folio-contents-roman {
+    width: 28px;
+    font-size: 12px;
+  }
+  .folio-contents-title {
+    font-size: 17.5px;
+    flex: 1 1 calc(100% - 32px);
+    min-width: 0;
+  }
+  .folio-contents-leader {
+    display: none;
+  }
+  .folio-contents-meta {
+    font-size: 14.5px;
+    padding-left: 28px;
+    width: 100%;
+  }
+  .austen-speaker-band {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding: 10px 0 12px;
+    min-height: auto;
+  }
+  .austen-speaker-name {
+    font-size: 13.5px;
+    letter-spacing: 0.09em;
+  }
+  .austen-speaker-role {
+    white-space: normal;
+    font-size: 15.5px;
+  }
+  .austen-folio-body {
+    padding: 12px 0;
+    font-size: clamp(18px, 4.6vw, 21px);
+    gap: 0.72em;
+  }
+  .austen-turn-rubric {
+    font-size: 12px;
+    line-height: 22px;
+  }
+  .folio-manuscript-textarea {
+    font-size: 18px;
+  }
+  .folio-seed-link {
+    font-size: 16.5px;
+    padding: 3px 0;
+    display: inline;
+  }
+  .folio-inline-select {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: bottom;
+    font-size: 16.5px;
+  }
+  .folio-commission-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+  }
+  .austen-plate-mat {
+    padding: 10px 8px 12px;
+  }
+  .austen-plate-stage:not(:has(img)) {
+    padding: 14px 12px !important;
+    gap: 12px;
+  }
+  .austen-plate-caption-row {
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-top: 10px;
+  }
+  .austen-plate-number {
+    font-size: 11.5px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .austen-plate-caption {
+    font-size: 16px;
+    line-height: 1.3;
+  }
+  .austen-opening-title-inner {
+    padding: 18px 14px;
+    gap: 14px;
+  }
+  .austen-opening-title-inner h1 {
+    font-size: clamp(30px, 8vw, 42px) !important;
+    line-height: 1.08 !important;
+  }
+  .austen-margin-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+  .austen-margin-bar > div:empty {
+    display: none;
+  }
+  .austen-margin-bar > div {
+    justify-content: flex-start;
+    gap: 4px 10px !important;
+  }
+  .austen-margin-bar > div:not(:empty) + div:not(:empty) {
+    border-top: 1px dotted var(--folio-rule);
+    padding-top: 6px;
+  }
+  .austen-margin-link {
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    min-height: 36px;
+    white-space: nowrap;
+  }
+  .folio-modal-backdrop {
+    padding: 12px !important;
+    align-items: flex-start !important;
+    overflow-y: auto;
+  }
+  .folio-modal-card {
+    max-height: 92vh;
+    overflow-y: auto;
+    margin: auto 0;
+  }
+  .folio-modal-inner {
+    padding: 20px 14px !important;
+  }
+  .folio-modal-inner h2 {
+    font-size: clamp(28px, 7.5vw, 38px) !important;
+    line-height: 1.1 !important;
+  }
+  .folio-modal-sheet {
+    padding: 18px 16px !important;
+    max-height: 92vh !important;
+    margin: auto 0;
+  }
+  .folio-modal-sheet h3 {
+    font-size: 20px !important;
+    line-height: 1.25 !important;
+  }
+  .folio-modal-sheet button.austen-margin-link {
+    flex-shrink: 0;
+    margin-left: 12px;
+  }
+  .folio-colophon-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
